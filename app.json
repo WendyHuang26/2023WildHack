@@ -1,6 +1,16 @@
 {
   "expo": {
     "name": "wildhack",
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+        }
+      ]
+    ],
     "slug": "wildhack",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,4 +37,5 @@
       "favicon": "./assets/favicon.png"
     }
   }
+  
 }
