@@ -15,7 +15,7 @@ import LoginScreen from'./screens/LoginScreen';
 const homeName = 'Detect';
 const rankingName = 'Ranking';
 const collectionName = 'My Collection';
-const loginName = "Login";
+const loginName = "User";
 
 const Tab = createBottomTabNavigator();
 
@@ -35,8 +35,10 @@ export default function MainContainer() {
                             iconName = focused ? 'list' : 'list-outline';
                         } else if (rn === collectionName) {
                             iconName = focused ? 'book' : 'book-outline';
+                        } else if (rn === loginName) {
+                            iconName = focused ? 'ios-person' : 'ios-person-outline';
                         }
-
+                        
                         return <Ionicons name={iconName} size={size} color={color}/>
 
                     },

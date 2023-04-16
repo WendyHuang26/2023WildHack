@@ -3,6 +3,7 @@ import { assets, View, ImageBackground, Image, StyleSheet, Text, Button, Dimensi
 import { Camera } from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import * as SQLite from 'expo-sqlite';
 
 const myImage = require('./logo.png');
 
@@ -32,6 +33,7 @@ export default function HomeScreen({ navigation }) {
     const [hasCameraPermission, setHasCameraPermission] = useState();
     const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
     const [photo, setPhoto] = useState();
+    const [db, setDb] = useState(SQLite.openDatabase('MainDB.db'));
 
     useEffect(() => {
         (async () => {
@@ -96,7 +98,7 @@ export default function HomeScreen({ navigation }) {
           .then(responseData => {
             console.log('Image upload response', responseData);
             // Add the responseData.url to your collection here
-            alert("Detected specieis added to collection!");
+            alert("Detected species added to collection!");
             setPhoto(undefined);
           })
           .catch(error => {
@@ -137,7 +139,12 @@ export default function HomeScreen({ navigation }) {
                 <TouchableOpacity style={styles.collectButton} onPress={addCollection}>
                     <Text icon = 'check' style={styles.buttonText}>COLLECT</Text>
                 </TouchableOpacity>
+<<<<<<< Updated upstream
                 <Text style={styles.detectionText}>Unknown</Text>
+=======
+
+                <Text style={styles.detectionText}>Happy Cat</Text>
+>>>>>>> Stashed changes
             </View>
             :
             <TouchableOpacity style={styles.detectButton} onPress={takePicture}>
