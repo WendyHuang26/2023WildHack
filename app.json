@@ -3,11 +3,11 @@
     "name": "wildhack",
     "plugins": [
       [
-        "react-native-vision-camera",
+        "expo-media-library",
         {
-          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
-          "enableMicrophonePermission": true,
-          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+          "photosPermission": "Allow $(AniCollect) to access your photos.",
+          "savePhotosPermission": "Allow $(AniCollect) to save photos.",
+          "isAccessMediaLocationEnabled": "true"
         }
       ]
     ],
