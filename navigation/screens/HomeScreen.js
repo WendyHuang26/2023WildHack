@@ -138,7 +138,7 @@ export default function HomeScreen({ navigation }) {
                     <Text icon = 'check' style={styles.buttonText}>COLLECT</Text>
                 </TouchableOpacity>
 
-                <Text style={styles.detectionText}>dont know</Text>
+                <Text style={styles.detectionText}>Unknown</Text>
             </View>
             :
             <TouchableOpacity style={styles.detectButton} onPress={takePicture}>
