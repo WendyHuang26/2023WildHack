@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect} from 'react';
-import { View, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from 'react-native';
+import { View, ImageBackground, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from 'react-native';
 import { Camera, CameraType} from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
@@ -75,7 +75,7 @@ export default function HomeScreen({ navigation }) {
         <View>
             {image ?
             <View>
-                <TouchableOpacity style={styles.detectButton} onPress={() => setImage(null)}>
+                <TouchableOpacity style={styles.redetectButton} onPress={() => setImage(null)}>
                     <Text icon = 'retweet' style={styles.buttonText}>RE-DETECT</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveButton} onPress={saveImage} >
@@ -84,6 +84,10 @@ export default function HomeScreen({ navigation }) {
                 <TouchableOpacity style={styles.shareButton} onPress={shareImage} >
                     <Text icon = 'check' style={styles.buttonText}>SHARE</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.collectButton} >
+                    <Text icon = 'check' style={styles.buttonText}>COLLECT</Text>
+                </TouchableOpacity>
+                <Text style={styles.detectionText}>dont know</Text>
             </View>
             :
             <TouchableOpacity style={styles.detectButton} onPress={takePicture}>
@@ -110,57 +114,86 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         position: "absolute",
-        top: 70,
+        top: 60,
     },
     camera: {
         backgroundColor: 'transparent',
         color: 'transparent',
         width: 320,
-        height: 320,
+        height: 310,
         borderWidth: 2,
         borderColor: 'black',
         borderRadius: 10,
         alignSelf:'center',
         position: 'absolute',
-        top: 180,
-    },
-    detectButton: {
-        backgroundColor: '#95b08f',
-        color: 'transparent',
-        width: 200,
-        height: 40,
-        borderRadius: 10,
-        alignSelf:'center',
-        position: 'absolute',
-        top: 195,
+        top: 160,
     },
     buttonText: {
         alignSelf:'center',
         color: 'white',
         fontStyle: 'normal',
-        fontSize: 25,
+        fontSize: 23,
         textAlign: 'center',
         position: 'absolute',
-        top: 6,
+        top: 7,
+    },
+    detectionText: {
+        alignSelf:'center',
+        color: 'white',
+        fontStyle: 'normal',
+        fontSize: 23,
+        textAlign: 'center',
+        position: 'absolute',
+        top: 140,
+    },
+    detectButton: {
+        backgroundColor: '#95b08f',
+        color: 'transparent',
+        width: 200,
+        height: 50,
+        borderRadius: 10,
+        alignSelf: 'center',
+        position: 'absolute',
+        top: 195,
+    },
+    redetectButton: {
+        backgroundColor: '#95b08f',
+        color: 'transparent',
+        width: 140,
+        height: 40,
+        borderRadius: 10,
+        position: 'absolute',
+        top: 195,
+        left: -150,
+    },
+    collectButton: {
+        backgroundColor: '#95b08f',
+        color: 'transparent',
+        width: 140,
+        height: 40,
+        borderRadius: 10,
+        position: 'absolute',
+        top: 195,
+        left: 10,
     },
     saveButton: {
         backgroundColor: '#95b08f',
         color: 'transparent',
-        width: 200,
+        width: 140,
         height: 40,
         borderRadius: 10,
-        alignSelf:'center',
         position: 'absolute',
-        top: 245,
+        top: 260,
+        left: 10,
     },
     shareButton: {
         backgroundColor: '#95b08f',
         color: 'transparent',
-        width: 200,
+        width: 140,
         height: 40,
         borderRadius: 10,
-        alignSelf:'center',
         position: 'absolute',
-        top: 295,
+        top: 260,
+        left: -150
     },
 })

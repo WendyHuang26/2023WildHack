@@ -1,12 +1,13 @@
 import * as React from "react";
-import {View, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from "react-native";
+import {View, ScrollView, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from "react-native";
 
 export default function RankingScreen({ navigation }) {
-    return (<SafeAreaView style={styles.container}>
+    return (
+    <ScrollView contentContainerStyle={styles.container}>
         <Text>                                                                                                       </Text>
         <Text style={styles.titleText}>Ranking</Text>
 
-    </SafeAreaView>)
+    </ScrollView>)
 }
 
 const styles = StyleSheet.create({
