@@ -139,12 +139,7 @@ export default function HomeScreen({ navigation }) {
                 <TouchableOpacity style={styles.collectButton} onPress={addCollection}>
                     <Text icon = 'check' style={styles.buttonText}>COLLECT</Text>
                 </TouchableOpacity>
-<<<<<<< Updated upstream
                 <Text style={styles.detectionText}>Unknown</Text>
-=======
-
-                <Text style={styles.detectionText}>Happy Cat</Text>
->>>>>>> Stashed changes
             </View>
             :
             <TouchableOpacity style={styles.detectButton} onPress={takePicture}>
