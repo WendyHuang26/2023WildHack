@@ -20,16 +20,30 @@ export default function HomeScreen({ navigation }) {
     },[])
 
     const takePicture = async () => {
-        if(cameraRef) {
-            try {
-                const data = await cameraRef.current.takePictureAsync();
-                console.log(data);
-                setImage(data.uri);
-            } catch(e) {
-                console.log(e);
-            }
+        if (cameraRef) {
+          try {
+            const data = await cameraRef.current.takePictureAsync();
+            console.log(data);
+      
+            // Make a POST request to the backend server with the image URI
+            const response = await fetch('http://localhost:3000/process-image', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ uri: data.uri }),
+            });
+      
+            const result = await response.json();
+            console.log(result);
+      
+            // Update the state with the processed image
+            setImage(result.image);
+          } catch (e) {
+            console.log(e);
+          }
         }
-    }
+      };
 
     const saveImage = async () => {
         if(image) {
