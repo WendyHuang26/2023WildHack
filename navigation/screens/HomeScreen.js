@@ -1,21 +1,96 @@
-import * as React from "react";
-import {View, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from "react-native";
+import React, { useState, useRef, useEffect} from 'react';
+import { View, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from 'react-native';
+import { Camera, CameraType} from 'expo-camera';
+import { shareAsync } from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
 
 export default function HomeScreen({ navigation }) {
+    const [hasCameraPermission, setHasCameraPermission] = useState(null);
+    const [image, setImage] = useState(null);
+    const [type, setType] = useState(Camera.Constants.Type.back);
+    const [flash,setFlash] = useState(Camera.Constants.FlashMode.off);
+    const cameraRef = useRef(null);
+
+    useEffect(() => {
+        (async () => {
+            MediaLibrary.requestPermissionsAsync();
+            const cameraStatus = await Camera.requestCameraPermissionsAsync();
+            setHasCameraPermission(cameraStatus.status === 'granted');
+        })();
+    },[])
+
+    const takePicture = async () => {
+        if(cameraRef) {
+            try {
+                const data = await cameraRef.current.takePictureAsync();
+                console.log(data);
+                setImage(data.uri);
+            } catch(e) {
+                console.log(e);
+            }
+        }
+    }
+
+    const saveImage = async () => {
+        if(image) {
+            try {
+                await MediaLibrary.createAssetAsync(image);
+                alert('Picture saved')
+                setImage(null);
+            } catch(e) {
+                console.log(e)
+            }
+        }
+    }
+
+    const shareImage = async () => {
+        if(image) {
+            try {
+                await shareAsync(image);
+                setImage(null);
+            } catch(e) {
+                console.log(e)
+            }
+        }
+    }
+
+    if (hasCameraPermission === false) {
+        return <Text>No access to camera</Text>
+    }
+
     return (<SafeAreaView style={styles.container}>
         <Text>                                                                                                       </Text>
-        <Text style={styles.titleText}>AniCollect</Text>
+        <Text style={styles.titleText}>Narch</Text>
 
-        <View style={styles.cameraButton}>
-            <Button
-            //onPress={() => props.navigation.navigate('ScreenTwo')}
-            title=" "
-          />
+        {!image ?
+        <Camera 
+            style={styles.camera}
+            ref={cameraRef}
+        >
+        </Camera>
+        :
+        <Image source={{uri: image}} style={styles.camera} />
+        }
+
+        <View>
+            {image ?
+            <View>
+                <TouchableOpacity style={styles.detectButton} onPress={() => setImage(null)}>
+                    <Text icon = 'retweet' style={styles.buttonText}>RE-DETECT</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.saveButton} onPress={saveImage} >
+                    <Text icon = 'check' style={styles.buttonText}>SAVE</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.shareButton} onPress={shareImage} >
+                    <Text icon = 'check' style={styles.buttonText}>SHARE</Text>
+                </TouchableOpacity>
+            </View>
+            :
+            <TouchableOpacity style={styles.detectButton} onPress={takePicture}>
+                <Text icon = 'camera' style={styles.buttonText}>DETECT</Text>
+            </TouchableOpacity>
+            }
         </View>
-
-        <TouchableOpacity style={styles.detectButton}>
-            <Text style={styles.buttonText}>DETECT</Text>
-        </TouchableOpacity>
 
     </SafeAreaView>)
 }
@@ -35,29 +110,29 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         position: "absolute",
-        top: 100,
+        top: 70,
     },
-    cameraButton: {
+    camera: {
         backgroundColor: 'transparent',
         color: 'transparent',
-        width: 300,
-        height: 300,
+        width: 320,
+        height: 320,
         borderWidth: 2,
         borderColor: 'black',
         borderRadius: 10,
         alignSelf:'center',
         position: 'absolute',
-        top: 210,
+        top: 180,
     },
     detectButton: {
         backgroundColor: '#95b08f',
         color: 'transparent',
         width: 200,
-        height: 50,
+        height: 40,
         borderRadius: 10,
         alignSelf:'center',
         position: 'absolute',
-        top: 570,
+        top: 195,
     },
     buttonText: {
         alignSelf:'center',
@@ -66,6 +141,26 @@ const styles = StyleSheet.create({
         fontSize: 25,
         textAlign: 'center',
         position: 'absolute',
-        top: 8,
-    }
+        top: 6,
+    },
+    saveButton: {
+        backgroundColor: '#95b08f',
+        color: 'transparent',
+        width: 200,
+        height: 40,
+        borderRadius: 10,
+        alignSelf:'center',
+        position: 'absolute',
+        top: 245,
+    },
+    shareButton: {
+        backgroundColor: '#95b08f',
+        color: 'transparent',
+        width: 200,
+        height: 40,
+        borderRadius: 10,
+        alignSelf:'center',
+        position: 'absolute',
+        top: 295,
+    },
 })

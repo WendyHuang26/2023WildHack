@@ -1,8 +1,11 @@
 import * as React from 'react';
 import MainContainer from './navigation/MainContainer';
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Dimensions} from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import HomeScreen from "./navigation/screens/HomeScreen";
+import { Camera, CameraType} from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+
 //import { StatusBar } from 'expo-status-bar';
 //import Orientation from 'react-native-orientation';
 //import React, { useState, useEffect } from 'react';
