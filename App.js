@@ -5,16 +5,17 @@ import { StatusBar } from 'expo-status-bar';
 import HomeScreen from "./navigation/screens/HomeScreen";
 import { Camera, CameraType} from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import LoginScreen from "./navigation/screens/LoginScreen";
 
 export default function App() {
-  const detect = () => {
-    let url = "http://localhost:3000/process-image"
-    fetch(url).then((res) => {
-      res.json().then((label) => {
-        console.log(label)
-      })
-    }).catch(() => console.log("error"))
-  }
+  // const detect = () => {
+  //   let url = "http://localhost:3000/process-image"
+  //   fetch(url).then((res) => {
+  //     res.json().then((label) => {
+  //       console.log(label)
+  //     })
+  //   }).catch(() => console.log("error"))
+  // }
 
   return (
     <MainContainer/>

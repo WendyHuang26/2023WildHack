@@ -3,6 +3,7 @@ import { assets, View, ImageBackground, Image, StyleSheet, Text, Button, Dimensi
 import { Camera, CameraType} from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import SQLite from 'react-native-sqlite-storage';
 
 const myImage = require('./logo.png');
 
@@ -40,7 +41,11 @@ export default function HomeScreen({ navigation }) {
             // console.log(result);
       
             // Update the state with the processed image
+<<<<<<< Updated upstream
             setImage(data.uri);
+=======
+            setImage(data.url);
+>>>>>>> Stashed changes
           } catch (e) {
             console.log(e);
           }
