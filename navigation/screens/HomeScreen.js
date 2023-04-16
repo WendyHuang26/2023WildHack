@@ -1,99 +1,131 @@
 import React, { useState, useRef, useEffect} from 'react';
 import { assets, View, ImageBackground, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from 'react-native';
-import { Camera, CameraType} from 'expo-camera';
+import { Camera } from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 
 const myImage = require('./logo.png');
 
+const uploadImageToServer = async (base64Image) => {
+    const formData = new FormData();
+    formData.append('photo', {
+      uri: `data:image/jpeg;base64,${base64Image}`,
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    });
+  
+    try {
+      const response = await fetch('https://your-server.com/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const responseData = await response.json();
+      console.log('Image upload response', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('Error uploading image', error);
+    }
+  };
+
 export default function HomeScreen({ navigation }) {
-    const [hasCameraPermission, setHasCameraPermission] = useState(null);
-    const [image, setImage] = useState(null);
-    const [type, setType] = useState(Camera.Constants.Type.back);
-    const [flash,setFlash] = useState(Camera.Constants.FlashMode.off);
-    const cameraRef = useRef(null);
+    let cameraRef = useRef();
+    const [hasCameraPermission, setHasCameraPermission] = useState();
+    const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
+    const [photo, setPhoto] = useState();
 
     useEffect(() => {
         (async () => {
-            MediaLibrary.requestPermissionsAsync();
-            const cameraStatus = await Camera.requestCameraPermissionsAsync();
-            setHasCameraPermission(cameraStatus.status === 'granted');
+        const cameraPermission = await Camera.requestCameraPermissionsAsync();
+        const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+        setHasCameraPermission(cameraPermission.status === "granted");
+        setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
         })();
-    },[])
+    }, []);
+
+    if (hasCameraPermission === undefined) {
+        return <Text>Requesting permissions...</Text>
+    } else if (!hasCameraPermission) {
+        return <Text>No access to camera</Text>
+    }
 
     const takePicture = async () => {
         if (cameraRef) {
-          try {
-            const data = await cameraRef.current.takePictureAsync();
-            console.log(data);
-      
-            // // Make a POST request to the backend server with the image URI
-            // const response = await fetch('http://localhost:3000/process-image', {
-            //   method: 'POST',
-            //   headers: {
-            //     'Content-Type': 'application/json',
-            //   },
-            //   body: JSON.stringify({ uri: data.uri }),
-            // });
-      
-            // const result = await response.json();
-            // console.log(result);
-      
-            // Update the state with the processed image
-            setImage(data.uri);
-          } catch (e) {
-            console.log(e);
-          }
+            let options = {
+                quality: 1,
+                base64: true,
+                exif: false
+            };
+        
+            let newPhoto = await cameraRef.current.takePictureAsync(options);
+            setPhoto(newPhoto);
         }
       };
 
     const saveImage = async () => {
-        if(image) {
-            try {
-                await MediaLibrary.createAssetAsync(image);
-                alert('Picture saved')
-                setImage(null);
-            } catch(e) {
-                console.log(e)
-            }
+        if(photo) {
+            MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+                setPhoto(undefined);
+            });
         }
     }
 
     const shareImage = async () => {
-        if(image) {
-            try {
-                await shareAsync(image);
-                setImage(null);
-            } catch(e) {
-                console.log(e)
-            }
+        if(photo) {
+            shareAsync(photo.uri).then(() => {
+                setPhoto(undefined);
+            });
         }
     }
 
-    if (hasCameraPermission === false) {
-        return <Text>No access to camera</Text>
-    }
-
+    const addCollection = async () => {
+        if (photo) {
+          const uri = `data:image/jpeg;base64,${photo.base64}`; // Local image URI with base64 data
+          const formData = new FormData();
+      
+          formData.append('photo', {
+            uri: uri,
+            type: 'image/jpeg', // or the appropriate image type
+            name: 'photo.jpg' // or a unique name for the image
+          });
+      
+          fetch('http://localhost:5000/upload', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(responseData => {
+            console.log('Image upload response', responseData);
+            // Add the responseData.url to your collection here
+            alert("Detected specieis added to collection!");
+            setPhoto(undefined);
+          })
+          .catch(error => {
+            console.error('Error uploading image', error);
+          });
+        }
+    };
+      
     return (<SafeAreaView style={styles.container}>
                                             
         <View style={styles.logoContainer}>
             <Image source={myImage} style={styles.logo} resizeMode="contain"></Image>
         </View>
         
-        {!image ?
+        {!photo ?
         <Camera 
             style={styles.camera}
             ref={cameraRef}
         >
         </Camera>
         :
-        <Image source={{uri: image}} style={styles.camera} />
+
+        <Image style={styles.camera} source={{ uri: "data:image/jpg;base64," + photo.base64 }}></Image>
         }
 
         <View>
-            {image ?
+            {photo ?
             <View>
-                <TouchableOpacity style={styles.redetectButton} onPress={() => setImage(null)}>
+                <TouchableOpacity style={styles.redetectButton} onPress={() => setPhoto(undefined)}>
                     <Text icon = 'retweet' style={styles.buttonText}>RE-DETECT</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveButton} onPress={saveImage} >
@@ -102,9 +134,10 @@ export default function HomeScreen({ navigation }) {
                 <TouchableOpacity style={styles.shareButton} onPress={shareImage} >
                     <Text icon = 'check' style={styles.buttonText}>SHARE</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.collectButton} >
+                <TouchableOpacity style={styles.collectButton} onPress={addCollection}>
                     <Text icon = 'check' style={styles.buttonText}>COLLECT</Text>
                 </TouchableOpacity>
+
                 <Text style={styles.detectionText}>dont know</Text>
             </View>
             :
@@ -135,8 +168,6 @@ const styles = StyleSheet.create({
         top: 60,
     },
     camera: {
-        backgroundColor: 'transparent',
-        color: 'transparent',
         width: 320,
         height: 310,
         borderWidth: 2,
