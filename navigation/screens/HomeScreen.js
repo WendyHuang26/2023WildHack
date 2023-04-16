@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect} from 'react';
-import { View, ImageBackground, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from 'react-native';
+import { assets, View, ImageBackground, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from 'react-native';
 import { Camera, CameraType} from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+
+const myImage = require('./logo.png');
 
 export default function HomeScreen({ navigation }) {
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -73,9 +75,11 @@ export default function HomeScreen({ navigation }) {
     }
 
     return (<SafeAreaView style={styles.container}>
-        <Text>                                                                                                       </Text>
-        <Text style={styles.titleText}>Narch</Text>
-
+                                            
+        <View style={styles.logoContainer}>
+            <Image source={myImage} style={styles.logo} resizeMode="contain"></Image>
+        </View>
+        
         {!image ?
         <Camera 
             style={styles.camera}
@@ -105,7 +109,7 @@ export default function HomeScreen({ navigation }) {
             </View>
             :
             <TouchableOpacity style={styles.detectButton} onPress={takePicture}>
-                <Text icon = 'camera' style={styles.buttonText}>DETECT</Text>
+                <Text icon = 'camera' style={styles.detectButtonText}>DETECT</Text>
             </TouchableOpacity>
             }
         </View>
@@ -140,7 +144,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignSelf:'center',
         position: 'absolute',
-        top: 160,
+        top: 165,
+    },
+    detectButtonText: {
+        alignSelf:'center',
+        color: 'white',
+        fontStyle: 'normal',
+        fontSize: 23,
+        textAlign: 'center',
+        position: 'absolute',
+        top: 10,
     },
     buttonText: {
         alignSelf:'center',
@@ -158,7 +171,7 @@ const styles = StyleSheet.create({
         fontSize: 23,
         textAlign: 'center',
         position: 'absolute',
-        top: 140,
+        top: 150,
     },
     detectButton: {
         backgroundColor: '#95b08f',
@@ -210,4 +223,16 @@ const styles = StyleSheet.create({
         top: 260,
         left: -150
     },
+    logoContainer: {
+        position: 'absolute',
+        top: 25,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        paddingTop: StatusBar.currentHeight || 0, // Add padding for devices with a status bar (e.g., Android)
+      },
+      logo: {
+        width: 600,
+        height: 135,
+      },
 })

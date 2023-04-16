@@ -13,7 +13,6 @@ export default function CollectionScreen({ navigation }) {
     function handleScroll(event) {
         const { contentOffset } = event.nativeEvent;
         if (contentOffset.y < 50) {
-            // if contentOffset.y is less than 50, set it to 50 to ensure that the upper line of the rectangles does not go above the 50-point mark
             event.nativeEvent.contentOffset.y = 50;
         }
     }
@@ -55,32 +54,37 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         position: "absolute",
-        top: 50,
+        top: 25,
     },
     scrollContainer: {
         alignItems: "center",
         justifyContent: "center",
-        top: 50,
-        paddingTop: 20, // add top padding to avoid content clipping
+        top: 25,
+        paddingTop: 10, // add top padding to avoid content clipping
         paddingBottom: 40,
     },
     collection: {
         backgroundColor: 'white',
-        width: 300,
+        shadowOffset: {width:10, height:7,},
+        shadowOpacity: 0.2,
+        shadowColor: 'grey',
+        shadowRadius: 3,
+        width: 320,
         height: 120,
         borderRadius:20,
         alignSelf: 'center',
         marginTop: 20,
         top: 50,
     },
+
     button: {
         backgroundColor: "white",
         padding: 10,
         borderRadius: 5,
-      },
-      buttonText: {
-        color: "black",
-        fontWeight: "bold",
-        fontSize: 16,
-      },
+    },
+    buttonText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 16,
+    },
 })
