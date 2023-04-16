@@ -9,11 +9,13 @@ import * as MediaLibrary from 'expo-media-library';
 import HomeScreen from './screens/HomeScreen'
 import RankingScreen from './screens/RankingScreen'
 import CollectionScreen from './screens/CollectionScreen'
+import LoginScreen from'./screens/LoginScreen';
 
 // screen names
 const homeName = 'Detect';
 const rankingName = 'Ranking';
 const collectionName = 'My Collection';
+const loginName = "Login";
 
 const Tab = createBottomTabNavigator();
 
@@ -39,7 +41,8 @@ export default function MainContainer() {
 
                     },
                 })}>
-
+                
+                <Tab.Screen name={loginName} component={LoginScreen}/>
                 <Tab.Screen name={homeName} component={HomeScreen}/>
                 <Tab.Screen name={rankingName} component={RankingScreen}/>
                 <Tab.Screen name={collectionName} component={CollectionScreen}/>

@@ -41,11 +41,7 @@ export default function HomeScreen({ navigation }) {
             // console.log(result);
       
             // Update the state with the processed image
-<<<<<<< Updated upstream
             setImage(data.uri);
-=======
-            setImage(data.url);
->>>>>>> Stashed changes
           } catch (e) {
             console.log(e);
           }

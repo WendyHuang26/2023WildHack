@@ -1,5 +1,7 @@
 import React, { useState, useEffect} from 'react';
-import { View, ImageBackground, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font, TextInput, Alert} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View, ImageBackground, Image, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, TextInput, Alert} from 'react-native';
 import SQLite from 'react-native-sqlite-storage';
 //import { AsyncStorage } from 'react-native';
 
@@ -12,7 +14,7 @@ const db = SQLite.openDatabase(
     () => { },
     error => {console.log(error)}
 )
-export default function Login() {
+export default function App({navigation}) {
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
 
@@ -25,7 +27,7 @@ export default function Login() {
         db.transaction((tx) => {
             tx.executeSql(
                 "CREATE TABLE IF NOT EXISTS "
-                + "Users "
+                + "Users"
                 + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, Email TEXT, Name TEXT, C1 TEXT, I1 BLOB, C2 TEXT, I2 BLOB, C3 TEXT, I3 BLOB, C4 TEXT, I4 BLOB, C5 TEXT, I5 BLOB);"
             )
         })
@@ -35,7 +37,7 @@ export default function Login() {
         try {
             db.transaction((tx) => {
                 tx.executeSql(
-                    "SELECT Name, Age FROM Users",
+                    "SELECT Email, Name FROM Users",
                     [],
                     (tx, results) => {
                         var len = results.rows.length;
@@ -70,8 +72,8 @@ export default function Login() {
     }
     return (
         <View style={styles.body}>
-            {/* <Image style={styles.logo}/>
-            source = {require()} */}
+            <Image style={styles.logo}
+            source = {require('./logo.png')}/>
             <TextInput 
             style={styles.input}
             placeholder = 'Enter your email:' 
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '0080ff',
+        backgroundColor: '#0080ff',
     },
     logo: {
         width: 100,
@@ -113,7 +115,6 @@ const styles = StyleSheet.create({
     },
     login: {
         backgroundColor: '#95b08f',
-        color: 'transparent',
         width: 200,
         height: 50,
         borderRadius: 10,
