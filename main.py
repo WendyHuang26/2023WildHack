@@ -8,7 +8,7 @@ import requests
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///image_db.sqlite3'
 db = SQLAlchemy(app)
-
+#HI
 # Define the Image model
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
