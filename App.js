@@ -6,15 +6,16 @@ import HomeScreen from "./navigation/screens/HomeScreen";
 import { Camera, CameraType} from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 
-//import { StatusBar } from 'expo-status-bar';
-//import Orientation from 'react-native-orientation';
-//import React, { useState, useEffect } from 'react';
-//import {ImageBackground, StyleSheet, Text, Button, View, SafeAreaView, Image, TouchableOpacity} from 'react-native';
-//import { NavigationContainer } from '@react-navigation/native';
-//import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-
 export default function App() {
+  const detect = () => {
+    let url = "http://localhost:3000/process-image"
+    fetch(url).then((res) => {
+      res.json().then((label) => {
+        console.log(label)
+      })
+    }).catch(() => console.log("error"))
+  }
+
   return (
     <MainContainer/>
   );
