@@ -1,5 +1,15 @@
 import * as React from "react";
 import {View, ScrollView, StyleSheet, Text, Button, Dimensions, SafeAreaView, TouchableOpacity, StatusBar, font} from "react-native";
+import SQLite from 'react-native-sqlite-storage';
+
+const db = SQLite.openDatabase(
+    {
+        name: 'MainDB',
+        location: 'default',
+    },
+    () => { },
+    error => {console.log(error)}
+)
 
 export default function CollectionScreen({ navigation }) {
     const [rectangles, setRectangles] = React.useState(1); // state to keep track of the number of rectangles
