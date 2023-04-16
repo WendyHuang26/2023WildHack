@@ -14,7 +14,7 @@ const db = SQLite.openDatabase(
     () => { },
     error => {console.log(error)}
 )
-export default function App({navigation}) {
+export default function App({ navigation }) {
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
 

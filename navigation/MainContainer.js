@@ -42,10 +42,10 @@ export default function MainContainer() {
                     },
                 })}>
                 
-                <Tab.Screen name={loginName} component={LoginScreen}/>
                 <Tab.Screen name={homeName} component={HomeScreen}/>
                 <Tab.Screen name={rankingName} component={RankingScreen}/>
                 <Tab.Screen name={collectionName} component={CollectionScreen}/>
+                <Tab.Screen name={loginName} component={LoginScreen}/>
 
             </Tab.Navigator>
         </NavigationContainer>
