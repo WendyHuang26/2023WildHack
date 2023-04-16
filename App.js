@@ -1,291 +1,87 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useEffect, useState, useRef} from 'react';
-import { StyleSheet,Text,View,Button,TouchableOpacity,Linking,Image} from 'react-native';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
-import HomeScreen from "./screens/HomeScreen";
+import { StyleSheet, Text, View, SafeAreaView, Button, Image } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Camera } from 'expo-camera';
+import { shareAsync } from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
 
-// function App() {
-//   const camera = useRef(null);
-//   const devices = useCameraDevices();
-//   const device = devices.back;
-
-//   const [showCamera, setShowCamera] = useState(false);
-//   const [imageSource, setImageSource] = useState('');
-
-//   useEffect(() => {
-//     async function getPermission() {
-//       const permission = await Camera.requestCameraPermission();
-//       console.log('Camera permission status: $(permission)');
-//       if (permission === 'denied') await Linking.openSettings();
-//     }
-//     getPermission();
-//   }, []);
-
-//   const capturePhoto = async () => {
-//     if (camera.current !== null) {
-//       const photo = await camera.current.takePhoto({});
-//       setImageSource(photo.path);
-//       setShowCamera(false);
-//       console.log(photo.path);
-//     }
-//   }
-
-//   if (device == null) {
-//     return <Text>Camera is currently not available...</Text>;
-//   }
-
-//   return (
-//     <View style={styles.container}>
-//       {showCamera ? (
-//         <>
-//           <Camera
-//             ref = {camera}
-//             style = {StyleSheet.absoluteFill}
-//             device = {device}
-//             isActive = {showCamera}
-//             photo = {true}
-//           />
-
-//           <View style={styles.buttonContainer}>
-//             <TouchableOpacity
-//               style={styles.camButton}
-//               onPress={() => capturePhoto()}
-//             />
-//           </View>
-//         </>
-//       ) : (
-//         <>
-//           {imageSource !== '' ? (
-//             <Image
-//               style={styles.image}
-//               source={{
-//                 uri: 'file://' + $(imageSource),
-//               }}
-//             />
-//           ) : null}
-
-//           <View style={styles.backButton}>
-//             <TouchableOpacity
-//               style={{
-//                 backgroundColor: 'rgba(0,0,0,0.2)',
-//                 padding: 10,
-//                 justifyContent: 'center',
-//                 alighItems: 'center',
-//                 borderRadius: 10,
-//                 borderWidth: 2,
-//                 borderColor: '#fff',
-//                 width: 100,
-//               }}
-//               onPress = {() => setShowCamera(true)}>
-//                 <Text style={{color: 'white', fontWeight: '500'}}>Back</Text>
-//               </TouchableOpacity>
-//           </View>
-//           <View style={styles.buttonContainer}>
-//             <View style={styles.buttonContainer}>
-//               <TouchableOpacity
-//                 style = {{
-//                   backgroundColor: '#fff',
-//                   padding: 10,
-//                   justifyContent: 'center',
-//                   alighItems: 'center',
-//                   borderRadius: 10,
-//                   borderWidth: 2,
-//                   borderColor: '#77c3ec',
-//                 }}
-//                 onPress = {() => setShowCamera(true)}>
-//                   <Text style={{color: '#77c3ec', fontWeight: '500'}}>
-//                     RETAKE
-//                   </Text>
-//                 </TouchableOpacity>
-//                 <TouchableOpacity
-//                   style = {{
-//                     backgroundColor: '#77c3ec',
-//                     padding: 10,
-//                     justifyContent: 'center',
-//                     alignItems: 'center',
-//                     borderRadius: 10,
-//                     borderWidth: 2,
-//                     borderColor: 'white',
-//                   }}
-//                   onPress={() => setShowCamera(true)}>
-//                   <Text style={{color: 'white', fontWeight: '500'}}>
-//                     USE PHOTO
-//                   </Text>
-//                 </TouchableOpacity>
-//             </View>
-//           </View>
-//         </>
-//       )}
-//       <HomeScreen/>
-//       <StatusBar style="auto" />
-//     </View>
-//   );
-// }
-
-function App() {
-  const camera = useRef(null);
-  const devices = useCameraDevices();
-  const device = devices.back;
-
-  const [showCamera, setShowCamera] = useState(false);
-  const [imageSource, setImageSource] = useState('');
+export default function App() {
+  let cameraRef = useRef();
+  const [hasCameraPermission, setHasCameraPermission] = useState();
+  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
+  const [photo, setPhoto] = useState();
 
   useEffect(() => {
-    async function getPermission() {
-      const permission = await Camera.requestCameraPermission();
-      console.log('Camera permission status: $(permission)');
-      if (permission === 'denied') await Linking.openSettings();
-    }
-    getPermission();
+    (async () => {
+      const cameraPermission = await Camera.requestCameraPermissionsAsync();
+      const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+      setHasCameraPermission(cameraPermission.status === "granted");
+      setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
+    })();
   }, []);
 
-  const capturePhoto = async () => {
-    if (camera.current !== null) {
-      const photo = await camera.current.takePhoto({});
-      setImageSource(photo.path);
-      setShowCamera(false);
-      console.log(photo.path);
-    }
+  if (hasCameraPermission === undefined) {
+    return <Text>Requesting permissions...</Text>
+  } else if (!hasCameraPermission) {
+    return <Text>Permission for camera not granted. Please change this in settings.</Text>
   }
 
-  if (device == null) {
-    return <Text>Camera is currently not available...</Text>;
+  let takePic = async () => {
+    let options = {
+      quality: 1,
+      base64: true,
+      exif: false
+    };
+
+    let newPhoto = await cameraRef.current.takePictureAsync(options);
+    setPhoto(newPhoto);
+  };
+
+  if (photo) {
+    let sharePic = () => {
+      shareAsync(photo.uri).then(() => {
+        setPhoto(undefined);
+      });
+    };
+
+    let savePhoto = () => {
+      MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+        setPhoto(undefined);
+      });
+    };
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <Image style={styles.preview} source={{ uri: "data:image/jpg;base64," + photo.base64 }} />
+        <Button title="Share" onPress={sharePic} />
+        {hasMediaLibraryPermission ? <Button title="Save" onPress={savePhoto} /> : undefined}
+        <Button title="Discard" onPress={() => setPhoto(undefined)} />
+      </SafeAreaView>
+    );
   }
 
   return (
-    <View style={styles.container}>
-      {showCamera ? (
-        <>
-          <Camera
-            ref = {camera}
-            style = {StyleSheet.absoluteFill}
-            device = {device}
-            isActive = {showCamera}
-            photo = {true}
-          />
-
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.camButton}
-              onPress={() => capturePhoto()}
-            />
-          </View>
-        </>
-      ) : (
-        <>
-          {imageSource !== '' ? (
-            <Image
-              style={styles.image}
-              source={{
-                uri: 'file://' + $(imageSource),
-              }}
-            />
-          ) : null}
-
-          <View style={styles.backButton}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.2)',
-                padding: 10,
-                justifyContent: 'center',
-                alighItems: 'center',
-                borderRadius: 10,
-                borderWidth: 2,
-                borderColor: '#fff',
-                width: 100,
-              }}
-              onPress = {() => setShowCamera(true)}>
-                <Text style={{color: 'white', fontWeight: '500'}}>Back</Text>
-              </TouchableOpacity>
-          </View>
-          <View style={styles.buttonContainer}>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style = {{
-                  backgroundColor: '#fff',
-                  padding: 10,
-                  justifyContent: 'center',
-                  alighItems: 'center',
-                  borderRadius: 10,
-                  borderWidth: 2,
-                  borderColor: '#77c3ec',
-                }}
-                onPress = {() => setShowCamera(true)}>
-                  <Text style={{color: '#77c3ec', fontWeight: '500'}}>
-                    RETAKE
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style = {{
-                    backgroundColor: '#77c3ec',
-                    padding: 10,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 10,
-                    borderWidth: 2,
-                    borderColor: 'white',
-                  }}
-                  onPress={() => setShowCamera(true)}>
-                  <Text style={{color: 'white', fontWeight: '500'}}>
-                    USE PHOTO
-                  </Text>
-                </TouchableOpacity>
-            </View>
-          </View>
-        </>
-      )}
-      <HomeScreen/>
+    <Camera style={styles.container} ref={cameraRef}>
+      <View style={styles.buttonContainer}>
+        <Button title="Take Pic" onPress={takePic} />
+      </View>
       <StatusBar style="auto" />
-    </View>
+    </Camera>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  button: {
-    backgroundColor: 'gray',
-  },
-  backButton: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    position: 'absolute',
-    justifyContent: 'center',
-    width: '100%',
-    top: 0,
-    padding: 25,
-  },
   buttonContainer: {
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignitems: 'center',
-    width: '100%',
-    top: 0,
-    padding: 25,
+    backgroundColor: '#fff',
+    alignSelf: 'flex-end'
   },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  camButton: {
-    height: 80,
-    width: 80,
-    borderRadius: 40,
-    backgroundColor: '#B2BEB5',
-    alignSelf: 'center',
-    borderWidth: 4,
-    borderColor: 'white',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    aspectRatio: 9/16,
-  },
+  preview: {
+    alignSelf: 'stretch',
+    flex: 1
+  }
 });
-
-export default App;
